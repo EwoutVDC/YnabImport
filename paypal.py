@@ -9,6 +9,8 @@ class PayPalCsvLine(CsvLine):
     def __init__(self, line):
         print(line)
         values = line.split('","')
+        if (values[4] == 'General Authorization'):
+            raise InputException("Ignore paypal general authorization")
         self.date = datetime.strptime(values[0].replace('"', ''), "%d/%m/%Y").date()
         self.amount = float(values[7].replace(',', '.'))
         if (self.amount == 0):

@@ -10,9 +10,9 @@ class IngCsvLine(CsvLine):
     def __init__(self, line):
         print(line)
         values = line.split(';')
-        if (values[5] == ""):
+        if (values[4] == ""):
             raise InputException("no date")
-        self.date = datetime.strptime(values[5], "%d/%m/%Y").date()
+        self.date = datetime.strptime(values[4], "%d/%m/%Y").date()
         self.amount = float(values[6].replace(',', '.'))
         if (self.amount == 0):
             raise InputException("amount 0")

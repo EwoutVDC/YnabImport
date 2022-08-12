@@ -7,23 +7,34 @@ import re
 for l in regex_payee_category:
     l[0] = re.compile(l[0])
 
-def process_files(classname, inputfile, outputfile):
+def process_files(classname, inputfile, outputfile, linesToMerge=1):
     with open (inputfile) as f:
         lines = f.readlines()
         del lines[0]
         transactions = []
         exceptions = []
+        linesMerged = 0
+        mergedLine = ""
         for (i, line) in enumerate(lines, start=2):
+            linesMerged += 1
+            mergedLine += line.strip()
+            if (linesMerged < linesToMerge):
+                mergedLine += ";"
+                continue
+                 
             try:
-                t = classname(line).ToTransaction()
+                t = classname(mergedLine).ToTransaction()
                 transactions.append(t)
                 print (i, str(t))
             except InputException as err:
-                print("InputException: " + str(err) + " For input: '" + line + "'")
+                print("InputException: " + str(err) + " For input: '" + mergedLine + "'")
             except IgnoreException as err:
-                print("Exception: " + str(err) + " For input: '" + line + "'")
+                print("Exception: " + str(err) + " For input: '" + mergedLine + "'")
             except Exception as err:
-                exceptions.append([i, err, line])
+                exceptions.append([i, err, mergedLine])
+            
+            linesMerged = 0
+            mergedLine = ""
         
         if (len(exceptions) > 0):
             print ("\033[1;31;40mExceptions:\n\033[0;37;40m")
